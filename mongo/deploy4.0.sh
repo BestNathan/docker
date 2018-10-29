@@ -1,3 +1,4 @@
+#!/bin/zsh
 username=$1
 password=$2
 
