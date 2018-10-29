@@ -1,7 +1,8 @@
-version: '2.2'
+version: '2'
 services:
   elasticsearch:
     image: registry.docker-cn.com/library/elasticsearch:6.4.2
+    restart: always
     container_name: elasticsearch
     environment:
       - cluster.name=docker-cluster
@@ -14,11 +15,12 @@ services:
     volumes:
       - esdata1:/usr/share/elasticsearch/data
     ports:
-      - 39200:9200
+      - "9200"
     networks:
       - elasticsearch
   elasticsearch2:
     image: registry.docker-cn.com/library/elasticsearch:6.4.2
+    restart: always
     container_name: elasticsearch2
     environment:
       - cluster.name=docker-cluster
@@ -35,10 +37,11 @@ services:
       - elasticsearch
   kibana:
     image: registry.docker-cn.com/library/kibana:6.4.2
+    restart: always
     container_name: kibana
     depends_on: [elasticsearch]
     ports:
-      - 35601:5601
+      - "5601"
     networks:
       - elasticsearch
 

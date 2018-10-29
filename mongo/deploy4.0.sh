@@ -14,6 +14,7 @@ fi
 mkdir -p /data/mongo/4.0/
 chmod -R 777 /data/mongo
 docker run \
+    --restart always \
     --name mongo4.0 \
     -p :27017 \
     -d \

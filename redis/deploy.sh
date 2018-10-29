@@ -13,6 +13,7 @@ fi
 mkdir -p /data/redis/
 chmod -R 777 /data/redis
 docker run \
+    --restart always \
     --name redis \
     -p :6379 \
     -d \

@@ -14,6 +14,7 @@ fi
 mkdir -p /data/mongo/3.2/
 chmod -R 777 /data/mongo
 docker run \
+    --restart always \
     --name mongo3.2 \
     -p :27017 \
     -d \
