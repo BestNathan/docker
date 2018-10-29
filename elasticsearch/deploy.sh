@@ -1,3 +1,4 @@
+#!/bin/zsh
 # usage: ./deploy.sh start
 #        ./deploy.sh stop
 cmd=$1

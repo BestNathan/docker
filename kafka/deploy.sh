@@ -1,3 +1,4 @@
+#!/bin/zsh
 # usage: ./deploy.sh start 127.0.0.1
 #        ./deploy.sh stop
 cmd=$1
