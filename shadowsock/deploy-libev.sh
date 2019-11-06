@@ -108,20 +108,16 @@ cat > $shadowsockconfigfile <<EOF
 }
 EOF
 
-kcpphonestring="key=$password;crypt=aes;mode=fast2;mtu=1350;sndwnd=1024;rcvwnd=1024;datashard=10;parityshard=3;dscp=0"
+kcp_crypt="aes"
+kcp_mode="fast3"
+kcpphonestring="key=$password;crypt=$kcp_crypt;mode=$kcp_mode"
 cat > $kcptunconfigfile <<EOF
 {
     "listen": ":$kcpport",
     "target": "$serverip:$serverport",
     "key": "$password",
-    "crypt": "aes",
-    "mode": "fast2",
-    "mtu": 1350,
-    "sndwnd": 1024,
-    "rcvwnd": 1024,
-    "datashard": 10,
-    "parityshard": 3,
-    "dscp": 0,
+    "crypt": "$kcp_crypt",
+    "mode": "$kcp_mode",
     "nocomp": false,
     "quiet": false,
     "pprof": false
@@ -144,9 +140,11 @@ ulimit -u 65535
 
 cat >> /etc/sysctl.conf << EOF
 
-net.core.rmem_max = 67108864
-net.core.wmem_max = 67108864
-net.core.netdev_max_backlog = 250000
+net.core.rmem_max=26214400 // BDP - bandwidth delay product
+net.core.rmem_default=26214400
+net.core.wmem_max=26214400
+net.core.wmem_default=26214400
+net.core.netdev_max_backlog=2048 // proportional to -rcvwnd
 net.core.somaxconn = 4096
 
 net.ipv4.tcp_syncookies = 1
@@ -172,7 +170,7 @@ nohup ss-server -c $shadowsockconfigfile -u -v > $shadowsocklogfile 2>&1 &
 
 # setup kcptun
 
-wget https://github.com/xtaci/kcptun/releases/download/v20181002/kcptun-linux-amd64-20181002.tar.gz -O kcptun.tar.gz
+wget https://github.com/xtaci/kcptun/releases/download/v20191105/kcptun-linux-amd64-20191105.tar.gz -O kcptun.tar.gz
 tar -xvf kcptun.tar.gz
 rm -rf client_linux_amd64
 nohup ./server_linux_amd64 -c $kcptunconfigfile > $kcptunlogfile 2>&1 &
