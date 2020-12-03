@@ -3,16 +3,26 @@ serverip=$(/sbin/ifconfig -a|grep inet|grep -v 127.0.0.1|grep -v inet6|awk '{pri
 
 echo ""
 echo "usage: command -p[8888] -P[nathan] -m[rc4-md5] -h[$serverip] -k[6666]"
+echo "'-p': shadowsocks port, default: 8888"
+echo "'-P': shadowsocks password, default: nathan"
+echo "'-m': shadowsocks encryption, default: rc4-md5"
+echo "'-h': shadowsocks host, default: server ip"
+echo "'-k': kcptun port, default: 6666"
+echo "'-K': kcptun version, default: 20201126"
 echo "will setup shadowsock with serverip: $serverip"
 echo "if server ip is not correct, please use -h"
 echo ""
 
-while getopts "p:P:m:h:k:" arg  
+while getopts "p:P:m:h:k:K:" arg  
 do
     case $arg in
         k)
         echo "will use port for kcptun: $OPTARG"
         kcpport=$OPTARG
+        ;;
+        K)
+        echo "will use kcptun version: $OPTARG"
+        kcpversion=$OPTARG
         ;;
         p)
         echo "will use port for ss: $OPTARG"
@@ -59,6 +69,12 @@ if [[ -z $method ]]
 then
     echo "use default method: rc4-md5"
     method="rc4-md5"
+fi
+
+if [[ -z $kcpversion ]]
+then
+    echo "use default kcpversion: 20201126"
+    kcpversion="20201126"
 fi
 
 path="/etc/shadowsocks-libev/"
@@ -170,7 +186,7 @@ nohup ss-server -c $shadowsockconfigfile -u -v > $shadowsocklogfile 2>&1 &
 
 # setup kcptun
 
-wget https://github.com/xtaci/kcptun/releases/download/v20191105/kcptun-linux-amd64-20191105.tar.gz -O kcptun.tar.gz
+wget https://github.com/xtaci/kcptun/releases/download/v$kcpversion/kcptun-linux-amd64-$kcpversion.tar.gz -O kcptun.tar.gz
 tar -xvf kcptun.tar.gz
 rm -rf client_linux_amd64
 nohup ./server_linux_amd64 -c $kcptunconfigfile > $kcptunlogfile 2>&1 &
@@ -178,6 +194,7 @@ nohup ./server_linux_amd64 -c $kcptunconfigfile > $kcptunlogfile 2>&1 &
 echo "kcptun setup done"
 echo "####################"
 echo "## phone setting:"
+echo "##   version : $kcpversion"
 echo "##   port    : $kcpport"
 echo "##   phoneStr: $kcpphonestring"
 echo "####################"
